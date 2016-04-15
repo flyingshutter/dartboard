@@ -1,8 +1,10 @@
 import serial
+import time
 
 
 class DartboardBase:
     line = 'not initialized yet'
+    dateline = 'not initialized yet'
     msg = 'not initialized yet'
     do_log = 1
     log = []
@@ -17,19 +19,24 @@ class DartboardBase:
     def update_msg(self):
         x = self.query_line()
         self.line = x
+        self.dateline = x[:-1] + 'Time:' + str(time.time()) + '#'
         if self.do_log:
-            self.log.append(x)
+            self.log.append(self.dateline)
         if self.verbose:
-            print x
+            print self.dateline
         self.msg = self.parse_line(x)
         return self.msg
 
     def parse_line(self, x):
-        tmp = x.replace(':', '#').replace('@', '#').split('#')
+        tmp = self.dateline.replace(':', '#').replace('@', '#').split('#')
         msg = {}
-        for i in [1, 3, 5, 7, 9, 11, 13]:
+        for i in [1, 3, 5, 7, 9, 11, 13, 15, 17]:
             msg[tmp[i]] = tmp[i+1]
-        msg['Players'] = int(msg['Players'])
+        try:
+            msg['Players'] = int(msg['Players'])
+            msg['Time'] = float(msg['Time'])
+        except:
+            pass
         return msg
 
 
@@ -46,10 +53,23 @@ class Dartboard(DartboardBase):
             )
         
     def query_line(self):
-        self.ser.write('A')
+        #self.ser.write('A')
         x = self.ser.readline()
-        while (x == '\n') or (x == self.line):
+        
+        while (x == '') or (x == self.line):
             x = self.ser.readline()
+            success = False
+            while not success:
+                y = self.ser.readline()
+                while (y == ''):
+                    y = self.ser.readline()
+                if y in x:
+                    success = True
+                    x = y
+                else:
+                    x = y
+                    
+            
         return x
 
 

@@ -26,7 +26,10 @@ class PlayDart:
 
         while line['Players'] == 0:
             if line['Display2'][2] == 'P':
-                num_player = int(line['Display2'][1])
+                try:
+                    num_player = int(line['Display2'][1])
+                except:
+                    pass
             line = self.board.update_msg()
 
         if num_player == -1:
@@ -57,6 +60,7 @@ class PlayDart:
             # loop over players that haven't finished yet
             for i in [j for j in range(self.game['num_player']) if self.game['player_active'][j] == True]:
                 while self.board.msg['Players'] != pow(2, i):
+                    print self.board.msg['Players']
                     self.board.update_msg()
                 print ('-------- Player {:}: {:}'.format(i + 1, self.game['player_names'][i]))
 
@@ -70,7 +74,8 @@ if __name__ == '__main__':
         g.board.verbose = 0
     else:
         g = PlayDart()
-
+        g.board.verbose = 0
+        
     keep_running = 1
     while keep_running:      # enter main loop
         keep_running = 0
