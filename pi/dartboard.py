@@ -3,6 +3,7 @@ import serial
 
 class DartboardBase(object):
     line = 'not initialized yet'
+    msg = 'not initialized yet'
     do_log = 1
     log = []
     verbose = 1
@@ -20,7 +21,8 @@ class DartboardBase(object):
             self.log.append(x)
         if self.verbose:
             print x
-        return self.parse_line(x)
+        self.msg = self.parse_line(x)
+        return self.msg
 
     def parse_line(self, x):
         tmp = x.replace(':', '#').replace('@', '#').split('#')
@@ -60,4 +62,4 @@ class PseudoDartboard(DartboardBase):
         x = self.f.readline()
         while (x == '\n') or (x == self.line):
             x = self.f.readline()
-        return x
+        return x[:-1]
