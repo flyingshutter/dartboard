@@ -8,7 +8,6 @@ def detect_game(board):
     num_player = -1
 
     line = board.get_msg()
-
     while (game_name == 'None') or (line['Display1'][0] == 'G'):
         if line['Display1'][0] == 'G':
             game_name = line['Display1']
@@ -23,6 +22,15 @@ def detect_game(board):
         num_player = 2
 
     return {'num_player': num_player, 'game_name': game_name}
+
+
+def register_players(game):
+    player_names = []
+    for i in range(game['num_player']):
+        name = raw_input('Enter name of player {:}: '.format(i+1))
+        player_names.append(name)
+    game['player_names'] = player_names
+    return game
 
 
 if __name__ == '__main__':
@@ -42,11 +50,18 @@ if __name__ == '__main__':
         # print x
 
         # detect game
-        game = detect_game(d)
-        print game
+        print ('#############################################')
+        print ('## Waiting for game selection...')
+        my_game = detect_game(d)
+        print ('## game detected: game=' + str(my_game))
 
-        time.sleep(0.1)
+        # register players
+        print ('#############################################')
+        print ('## Register players...')
+        my_game = register_players(my_game)
+        print ('## Players registered: game=' + str(my_game))
 
         # update display
         
         # process database
+        time.sleep(0.1)

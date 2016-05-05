@@ -22,12 +22,11 @@ class DartboardBase(object):
             print x
         return self.parse_line(x)
 
-    def parse_line(self, line):
-        tmp = self.line.replace(':', '#').replace('@', '#').split('#')
+    def parse_line(self, x):
+        tmp = x.replace(':', '#').replace('@', '#').split('#')
         msg = {}
         for i in [1, 3, 5, 7, 9, 11, 13]:
             msg[tmp[i]] = tmp[i+1]
-
         msg['Players'] = int(msg['Players'])
         return msg
 
