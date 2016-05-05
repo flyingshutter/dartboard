@@ -17,7 +17,7 @@ class PseudoDartboard(object):
 
 
 
-    def getline(self):
+    def get_line(self):
 
         x = self.f.readline()
         while (x == '\n') or (x == self.line):
