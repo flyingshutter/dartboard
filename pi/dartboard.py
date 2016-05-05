@@ -10,14 +10,31 @@ class DartboardBase(object):
     def __init__(self):
         pass
 
-    def get_line(self):
+    def query_line(self):
         pass
+
+    def get_msg(self):
+        x = self.query_line()
+        self.line = x
+        if self.do_log:
+            self.log.append(x)
+        if self.verbose:
+            print x
+        return self.parse_line(x)
+
+    def parse_line(self, line):
+        tmp = self.line.replace(':', '#').replace('@', '#').split('#')
+        msg = {}
+        for i in [1, 3, 5, 7, 9, 11, 13]:
+            msg[tmp[i]] = tmp[i+1]
+
+        msg['Players'] = int(msg['Players'])
+        return msg
 
 
 class Dartboard(DartboardBase):
     def __init__(self):
         DartboardBase.__init__(self)
-
         self.ser = serial.Serial(
             port='/dev/ttyACM0',
             baudrate=115200,
@@ -27,39 +44,21 @@ class Dartboard(DartboardBase):
             timeout=0
             )
         
-    def get_line(self):
+    def query_line(self):
         self.ser.write('A')
         x = self.ser.readline()
         while (x == '\n') or (x == self.line):
             x = self.ser.readline()
-
-        self.line = x
-        if self.do_log:
-            self.log.append(x)
-
-        if self.verbose:
-            print x
-
         return x
 
 
 class PseudoDartboard(DartboardBase):
     def __init__(self, filename):
         DartboardBase.__init__(self)
-
         self.f = open(filename)
 
-    def get_line(self):
-
+    def query_line(self):
         x = self.f.readline()
         while (x == '\n') or (x == self.line):
             x = self.f.readline()
-
-        self.line = x
-        if self.do_log:
-            self.log.append(x)
-
-        if self.verbose:
-            print x
-
         return x
