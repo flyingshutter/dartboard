@@ -1,7 +1,7 @@
 import serial
 
 
-class DartboardBase(object):
+class DartboardBase:
     line = 'not initialized yet'
     msg = 'not initialized yet'
     do_log = 1
@@ -14,7 +14,7 @@ class DartboardBase(object):
     def query_line(self):
         pass
 
-    def get_msg(self):
+    def update_msg(self):
         x = self.query_line()
         self.line = x
         if self.do_log:
@@ -59,7 +59,7 @@ class PseudoDartboard(DartboardBase):
         self.f = open(filename)
 
     def query_line(self):
-        x = self.f.readline()
-        while (x == '\n') or (x == self.line):
-            x = self.f.readline()
-        return x[:-1]
+        x = self.f.readline()[:-1]
+        while (x == '') or (x == self.line):
+            x = self.f.readline()[:-1]
+        return x
