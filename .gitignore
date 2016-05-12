@@ -1,0 +1,5 @@
+#ignore python bytecode
+*.pyc
+
+#ignore pycharm project stuff
+.idea
