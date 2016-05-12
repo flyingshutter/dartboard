@@ -17,17 +17,9 @@ class DartboardBase:
         pass
 
     def update_msg(self):
-        x = self.query_line()
-        self.line = x
-        self.dateline = x[:-1] + 'Time:' + str(time.time()) + '#'
-        if self.do_log:
-            self.log.append(self.dateline)
-        if self.verbose:
-            print self.dateline
-        self.msg = self.parse_line(x)
-        return self.msg
+        pass
 
-    def parse_line(self, x):
+    def parse_line(self):
         tmp = self.dateline.replace(':', '#').replace('@', '#').split('#')
         msg = {}
         for i in [1, 3, 5, 7, 9, 11, 13, 15, 17]:
@@ -52,24 +44,34 @@ class Dartboard(DartboardBase):
             timeout=0
             )
         
+    def update_msg(self):
+        x = self.query_line()
+        self.line = x
+        self.dateline = x[:-1] + 'Time:' + str(time.time()) + '#'
+        if self.do_log:
+            self.log.append(self.dateline)
+        if self.verbose:
+            print self.dateline
+        self.msg = self.parse_line()
+        return self.msg
+
+    # query_line has to handle two common transmission errors:
+    # 1: inconsistent state while dartboard updates displays
+    # 2: random transmission error
     def query_line(self):
-        #self.ser.write('A')
         x = self.ser.readline()
-        
         while (x == '') or (x == self.line):
             x = self.ser.readline()
             success = False
             while not success:
                 y = self.ser.readline()
-                while (y == ''):
+                while y == '':
                     y = self.ser.readline()
                 if y in x:
                     success = True
                     x = y
                 else:
                     x = y
-                    
-            
         return x
 
 
@@ -78,8 +80,18 @@ class PseudoDartboard(DartboardBase):
         DartboardBase.__init__(self)
         self.f = open(filename)
 
+    def update_msg(self):
+        x = self.query_line()
+        self.line = x
+        self.dateline = x
+        if self.do_log:
+            self.log.append(self.dateline)
+        if self.verbose:
+            print self.dateline
+        self.msg = self.parse_line()
+        return self.msg
+
     def query_line(self):
+        #time.sleep(.1)
         x = self.f.readline()[:-1]
-        while (x == '') or (x == self.line):
-            x = self.f.readline()[:-1]
         return x
